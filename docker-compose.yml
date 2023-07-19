@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./
+    ports:
+      - 4200:4200
+    volumes:
+      - ./angular:/app
+      - /project/node_modules

@@ -102,24 +102,22 @@ export class BlankComponent implements OnInit, OnDestroy {
       this.pushLinea(row);
     });
     this.lineas.valueChanges.subscribe(() => {
-      this.calcularHorasTotales();
-      // calcular consensos:
       this.lineas.controls.forEach((row) => {
         this.calcularConsensos(row);
       });
+      this.calcularHorasTotales();
       this.cdkTable.renderRows();
     });
   }
 
   calcularConsensos(row) {
-    if (!row) {
+    const ia = Number(row.get('ia')?.value || 0)
+    const operativo = Number(row.get('operativo')?.value || 0)
+    const comercial = Number(row.get('comercial')?.value || 0)
+    if (!(ia && operativo && comercial)) {
       return 0;
     } else {
       let count = 0
-      const ia = Number(row.get('ia')?.value || 0)
-      const operativo = Number(row.get('operativo')?.value || 0)
-      const comercial = Number(row.get('comercial')?.value || 0)
-
       ia > 0 ? count++ : null;
       operativo > 0 ? count++ : null;
       comercial > 0 ? count++ : null;

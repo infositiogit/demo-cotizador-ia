@@ -1,0 +1,214 @@
+<div class="row">
+  <div class="col-sm-12">
+    <!-- formulario: cotizador -->
+    <nb-card class="inline-form-card">
+      <nb-card-header>Cotizador</nb-card-header>
+      <nb-card-body>
+        <form [formGroup]="mainForm">
+          <div class="form-group row">
+            <label for="inputEmail1" class="label col col-form-label">N° OPORTUNIDAD</label>
+            <div class="col-10">
+              <input nbInput formControlName="oportunidad" placeholder="XXXX" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-12">
+              <label fullWidth class="label">Ingrese los apuntes de requerimientos y anotaciones que los
+                describan</label>
+            </div>
+            <div class="col-10">
+              <textarea nbInput fullWidth formControlName="descripcion" style="height: 200px"></textarea>
+            </div>
+            <div class="col-2">
+              <div class="row mb-2 mr-1">
+                <button nbButton class="col" [shape]="'rectangle'" (click)="onClickProcesar()">
+                  Procesar
+                </button>
+              </div>
+              <div class="row mb-2 mr-1">
+                <button nbButton class="col" [shape]="'rectangle'" [status]="'danger'"
+                  (click)="dialogService.open(dialog)">
+                  Limpiar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <hr>
+        <div class="row mb-2">
+          <div class="col-sm-2">
+            <button class="col" nbButton [shape]="'rectangle'" (click)="pushLinea()">
+              Agregar Línea
+            </button>
+          </div>
+        </div>
+
+
+
+        <!-- formulario tabla -->
+        <div class="row mx-0 mb-3">
+          <table cdk-table class="col-sm-12" [dataSource]="lineas.controls" [formGroup]="secondaryForm">
+            <ng-container formArrayName="lineas">
+
+              <!-- detalle -->
+              <ng-container cdkColumnDef="detalle">
+                <!-- header -->
+                <th cdk-header-cell *cdkHeaderCellDef> Detalle </th>
+                <!-- column/cells -->
+                <td cdk-cell class="p-1" *cdkCellDef="let element; let index = index;" [formGroup]="element">
+                  <input type="text" nbInput fullWidth fieldSize="small" placeholder="Detalle"
+                    [value]="element.get('detalle')?.value" formControlName="detalle" />
+                </td>
+                <!-- footer -->
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef style="text-align: end; padding-right: 1rem">
+                  Totales
+                </th>
+              </ng-container>
+
+              <!-- ia -->
+              <ng-container cdkColumnDef="ia">
+                <!-- header -->
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 100px;"> IA </th>
+                <!-- column/cells -->
+                <td cdk-cell class="p-1" *cdkCellDef="let element; let index = index;" [formGroup]="element">
+                  <input type="number" nbInput fullWidth fieldSize="small" placeholder="Horas" formControlName="ia" />
+                </td>
+                <!-- footer -->
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef style="text-align: end; padding-right: 1rem">
+                  <input type="text" nbInput fullWidth disabled fieldSize="small" placeholder="Horas"
+                    [value]="iaTotal" />
+                </th>
+              </ng-container>
+
+              <!-- comercial -->
+              <ng-container cdkColumnDef="comercial">
+                <!-- header -->
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 100px;"> Comercial </th>
+                <!-- column/cells -->
+                <td cdk-cell class="p-1" *cdkCellDef="let element; let index = index;" [formGroup]="element">
+                  <input type="number" nbInput fullWidth fieldSize="small" placeholder="Horas"
+                    formControlName="comercial" />
+                </td>
+                <!-- footer -->
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef style="text-align: end; padding-right: 1rem">
+                  <input type="text" nbInput fullWidth disabled fieldSize="small" placeholder="Horas"
+                    [value]="comercialTotal" />
+                </th>
+              </ng-container>
+
+              <!-- operativo -->
+              <ng-container cdkColumnDef="operativo">
+                <!-- header -->
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 100px;"> Operativo </th>
+                <!-- column/cells -->
+                <td cdk-cell class="p-1" *cdkCellDef="let element; let index = index;" [formGroup]="element">
+                  <input type="number" nbInput fullWidth fieldSize="small" placeholder="Horas"
+                    formControlName="operativo" />
+                </td>
+                <!-- footer -->
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef style="text-align: end; padding-right: 1rem">
+                  <input type="text" nbInput fullWidth disabled fieldSize="small" placeholder="Horas"
+                    [value]="operativoTotal" />
+                </th>
+              </ng-container>
+
+              <!-- consenso -->
+              <ng-container cdkColumnDef="consenso">
+                <!-- header -->
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 100px;"> Consenso </th>
+                <!-- column/cells -->
+                <td cdk-cell class="p-1" *cdkCellDef="let element; let index = index;" [formGroup]="element">
+                  <input type="number" nbInput fullWidth fieldSize="small" placeholder="Horas"
+                    formControlName="consenso"/>
+                </td>
+                <!-- footer -->
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef style="text-align: end; padding-right: 1rem">
+                  <input type="text" nbInput fullWidth disabled fieldSize="small" placeholder="Horas"
+                    [value]="consensoTotal" />
+                </th>
+              </ng-container>
+
+              <!-- acciones -->
+              <ng-container cdkColumnDef="acciones">
+                <th cdk-header-cell *cdkHeaderCellDef style="width: 100px;">Acciones</th>
+                <td class="justify-content-center d-flex" cdk-cell *cdkCellDef="let element; let rowIndex = index">
+                  <button class="m-1" nbButton [size]="'tiny'" (click)="onClickMejorarLinea(element)">
+                    Mejorar
+                  </button>
+                  <button class="m-1" [status]="'danger'" nbButton [size]="'tiny'"
+                    (click)="dialogService.open(dialog2, { context: {element: element, index: rowIndex} })">
+                    Eliminar
+                  </button>
+                </td>
+                <th cdk-footer-cell class="p-1" *cdkFooterCellDef></th>
+              </ng-container>
+            </ng-container>
+
+            <!-- header row -->
+            <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+            <!-- row -->
+            <tr cdk-row *cdkRowDef="
+                let row;
+                columns: displayedColumns;
+                let rowIndex = index;
+              "></tr>
+            <!-- footer row -->
+            <tr cdk-footer-row *cdkFooterRowDef="displayedColumns; sticky: true"></tr>
+          </table>
+        </div>
+        <div class="row mb-2 infositio-primary-button">
+          <div class="col-sm-2">
+            <button class="col" nbButton [status]="'primary'" (click)="onClickGuardarLineas()">Guardar</button>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+
+
+
+  </div>
+</div>
+
+<!-- confirmación: eliminar formulario. -->
+<ng-template #dialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Atención</nb-card-header>
+    <nb-card-body>¿Seguro que quieres limpiar el formulario?</nb-card-body>
+    <nb-card-footer>
+      <div class="row">
+        <button class="col mx-1" nbButton [status]="'danger'" (click)="[resetMainForm(), ref.close()]">
+          Confirmar
+        </button>
+        <button class="col mx-1" nbButton (click)="ref.close()">
+          Cancelar
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- confirmación: eliminar. -->
+<ng-template #dialog2 let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Atención</nb-card-header>
+    <nb-card-body>
+      <p class>¿Seguro que quieres eliminar esta fila?</p>
+      <br>
+      <small>
+        <pre>Línea {{ data?.element?.value | json }}</pre>
+      </small>
+    </nb-card-body>
+
+
+    <nb-card-footer>
+      <div class="row">
+        <button class="col mx-1" nbButton [status]="'danger'" (click)="[deleteLinea(data), ref.close()]">
+          Confirmar
+        </button>
+        <button class="col mx-1" nbButton (click)="ref.close()">
+          Cancelar
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

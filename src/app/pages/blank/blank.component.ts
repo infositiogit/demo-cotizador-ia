@@ -114,13 +114,13 @@ export class BlankComponent implements OnInit, OnDestroy {
     const ia = Number(row.get('ia')?.value || 0)
     const operativo = Number(row.get('operativo')?.value || 0)
     const comercial = Number(row.get('comercial')?.value || 0)
-    if (!(ia && operativo && comercial)) {
-      return 0;
+    let count = 0
+    ia > 0 ? count++ : null;
+    operativo > 0 ? count++ : null;
+    comercial > 0 ? count++ : null;
+    if (ia === 0 && operativo === 0 && comercial === 0) {
+      row.get('consenso').patchValue(0, { emitEvent: false });
     } else {
-      let count = 0
-      ia > 0 ? count++ : null;
-      operativo > 0 ? count++ : null;
-      comercial > 0 ? count++ : null;
       row.get('consenso').patchValue(Number((ia + operativo + comercial) / count).toFixed(1), { emitEvent: false });
     }
   }

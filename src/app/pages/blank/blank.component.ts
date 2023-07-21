@@ -27,7 +27,7 @@ const ELEMENT_DATA: LineaDetalle[] = [
     detalle: 'Veniam sit aliquip ipsum amet eu dolore sint consequat.',
     ia: 2,
     comercial: 2,
-    operativo: 3,
+    operativo: null,
     consenso: 4,
     api: false,
   },
@@ -36,7 +36,7 @@ const ELEMENT_DATA: LineaDetalle[] = [
     ia: null,
     comercial: 2,
     operativo: 3,
-    consenso: 4,
+    consenso: null,
     api: false,
   },
 ];
@@ -103,25 +103,32 @@ export class BlankComponent implements OnInit, OnDestroy {
     });
     this.lineas.valueChanges.subscribe(() => {
       this.calcularHorasTotales();
-      this.cdkTable.renderRows();
+      // calcular consensos:
       this.lineas.controls.forEach((row) => {
-        row.get('ia')?.valueChanges.subscribe(() => {
-          this.calcularConsenso(row);
-        });
-        row.get('comercial')?.valueChanges.subscribe(() => {
-          this.calcularConsenso(row);
-        });
-        row.get('operativo')?.valueChanges.subscribe(() => {
-          this.calcularConsenso(row);
-        });
+        this.calcularConsensos(row);
       });
+      this.cdkTable.renderRows();
     });
+  }
 
+  calcularConsensos(row) {
+    if (!row) {
+      return 0;
+    } else {
+      let count = 0
+      const ia = Number(row.get('ia')?.value || 0)
+      const operativo = Number(row.get('operativo')?.value || 0)
+      const comercial = Number(row.get('comercial')?.value || 0)
 
+      ia > 0 ? count++ : null;
+      operativo > 0 ? count++ : null;
+      comercial > 0 ? count++ : null;
+      row.get('consenso').patchValue(Number((ia + operativo + comercial) / count).toFixed(2), { emitEvent: false });
+    }
   }
 
   onClickMejorarLinea(element) {
-    console.log(element.value);
+    console.log('onClickMejorarLinea', element.value);
   }
 
   deleteLinea(data) {
@@ -140,18 +147,6 @@ export class BlankComponent implements OnInit, OnDestroy {
     this.lineas.push(formGroupRow);
   }
 
-  calcularConsenso(row) {
-    if (!row) {
-      return 0;
-    }
-    let count = 0
-    row?.ia > 0 ? count++ : null;
-    row?.operativo > 0 ? count++ : null;
-    row?.comercial > 0 ? count++ : null;
-    const consenso = Number((row?.ia + row?.operativo + row?.comercial) / count).toFixed(2);
-    return consenso;
-  }
-
   onClickProcesar() {
     console.log('onClickProcesar', this.mainForm.controls, this.mainForm.value)
   }
@@ -163,36 +158,6 @@ export class BlankComponent implements OnInit, OnDestroy {
     console.log('this.lineas.controls', this.lineas.controls);
     console.log('this.lineas.controls', this.lineas.value);
   }
-
-  sumarFilaSeleccionada(rowIndex: number, row) {
-    console.log('sumarFilaSeleccionada', rowIndex, row)
-    // const filaSeleccionada = ELEMENT_DATA[rowIndex];
-    // const suma = Number(filaSeleccionada.ia) + Number(filaSeleccionada.comercial) + Number(filaSeleccionada.operativo);
-    // return suma;
-  }
-
-  calcularConsensoForRow(row: FormGroup): number {
-    const iaValue = row.get('ia')?.value || 0;
-    const comercialValue = row.get('comercial')?.value || 0;
-    const operativoValue = row.get('operativo')?.value || 0;
-
-
-    // Calcular el promedio de los valores de ia, comercial y operativo
-    const promedio = (iaValue + comercialValue + operativoValue) / 3;
-
-    // Ajustar a 2, 1 o 0 según corresponda
-    if (iaValue === 0 || comercialValue === 0 || operativoValue === 0 ||
-      isNaN(promedio) || !isFinite(promedio)) {
-      return 0;
-    } else if (promedio >= 2) {
-      return 2;
-    } else if (promedio >= 1) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
 }
 
 export class InitDataSource extends DataSource<LineaDetalle> {

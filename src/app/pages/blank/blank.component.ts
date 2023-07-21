@@ -131,6 +131,11 @@ export class BlankComponent implements OnInit, OnDestroy {
     this.lineas.removeAt(data?.index);
   }
 
+  resetMainForm() {
+    this.mainForm.get('oportunidad').setValue('');
+    this.mainForm.get('descripcion').setValue('');
+  }
+
   pushLinea(obj?: LineaDetalle) {
     const formGroupRow = this.formBuilder.group({
       detalle: [{ value: obj?.detalle || '', disabled: false }],

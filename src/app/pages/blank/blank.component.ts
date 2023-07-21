@@ -123,12 +123,8 @@ export class BlankComponent implements OnInit, OnDestroy {
       ia > 0 ? count++ : null;
       operativo > 0 ? count++ : null;
       comercial > 0 ? count++ : null;
-      row.get('consenso').patchValue(Number((ia + operativo + comercial) / count).toFixed(2), { emitEvent: false });
+      row.get('consenso').patchValue(Number((ia + operativo + comercial) / count).toFixed(1), { emitEvent: false });
     }
-  }
-
-  onClickMejorarLinea(element) {
-    console.log('onClickMejorarLinea', element.value);
   }
 
   deleteLinea(data) {
@@ -145,6 +141,10 @@ export class BlankComponent implements OnInit, OnDestroy {
       api: [{ value: obj?.api || false, disabled: false }],
     });
     this.lineas.push(formGroupRow);
+  }
+
+  onClickMejorarLinea(element) {
+    console.log('onClickMejorarLinea', element.value);
   }
 
   onClickProcesar() {
